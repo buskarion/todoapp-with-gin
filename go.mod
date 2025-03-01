@@ -1,4 +1,4 @@
-module github.com/buskarion/todo-app-with-gin
+module github.com/buskarion/todoapp-with-gin
 
 go 1.23.4
 
