@@ -9,6 +9,8 @@ func SetupRouter() *gin.Engine {
 	r := gin.Default()
 
 	r.GET("/status", handler.Status)
+	r.GET("/todos", handler.GetTodos)
+	r.GET("/todos/:id", handler.GetTodosByID)
 
 	return r
 }
