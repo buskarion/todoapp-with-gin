@@ -4,12 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/buskarion/todoapp-with-gin/db"
-	"github.com/buskarion/todoapp-with-gin/entity"
+	"github.com/buskarion/todoapp-with-gin/service"
 	"github.com/gin-gonic/gin"
 )
-
-var todos *[]entity.Todo = db.BuildDB()
 
 func Status(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"status": "Server is up and running."})
@@ -17,7 +14,7 @@ func Status(ctx *gin.Context) {
 
 func GetTodos(ctx *gin.Context) {
 	caseDbIsEmpty(ctx)
-	ctx.JSON(http.StatusOK, *todos)
+	ctx.JSON(http.StatusOK, service.GetAllTodos())
 }
 
 func GetTodosByID(ctx *gin.Context) {
@@ -29,12 +26,7 @@ func GetTodosByID(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 	}
 
-	var filteredTodos []entity.Todo
-	for _, t := range *todos {
-		if t.ID == parsedID {
-			filteredTodos = append(filteredTodos, t)
-		}
-	}
+	filteredTodos := service.FilterTodosByID(parsedID)
 
 	if len(filteredTodos) == 0 {
 		ctx.JSON(http.StatusNotFound, gin.H{"msg": "ID not found."})
@@ -44,7 +36,8 @@ func GetTodosByID(ctx *gin.Context) {
 }
 
 func caseDbIsEmpty(ctx *gin.Context) {
-	if len(*todos) == 0 {
+	todosList := service.GetAllTodos()
+	if len(todosList) == 0 {
 		ctx.JSON(http.StatusOK, gin.H{"msg": "The list is empty."})
 		return
 	}
