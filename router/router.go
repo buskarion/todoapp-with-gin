@@ -7,10 +7,11 @@ import (
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
+	h := handler.NewHandler()
 
-	r.GET("/status", handler.Status)
-	r.GET("/todos", handler.GetTodos)
-	r.GET("/todos/:id", handler.GetTodosByID)
+	r.GET("/status", h.Status)
+	r.GET("/todos", h.GetTodos)
+	r.GET("/todos/:id", h.GetTodosByID)
 
 	return r
 }
