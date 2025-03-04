@@ -41,11 +41,11 @@ func GetTodosByID(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 	}
 
-	filteredTodos := service.FilterTodosByID(parsedID)
+	filteredTodo := service.FilterTodosByID(parsedID)
 
-	if len(filteredTodos) == 0 {
+	if filteredTodo.ID == 0 {
 		ctx.JSON(http.StatusNotFound, gin.H{"msg": "ID not found."})
 	}
 
-	ctx.JSON(http.StatusOK, filteredTodos)
+	ctx.JSON(http.StatusOK, filteredTodo)
 }

@@ -11,14 +11,13 @@ func GetAllTodos(completed *bool) []entity.Todo {
 	return filterTodosByCompleted(completed)
 }
 
-func FilterTodosByID(id int) []entity.Todo {
-	var filteredTodos []entity.Todo
+func FilterTodosByID(id int) entity.Todo {
 	for _, t := range *todos {
 		if t.ID == id {
-			filteredTodos = append(filteredTodos, t)
+			return t
 		}
 	}
-	return filteredTodos
+	return entity.Todo{}
 }
 
 func filterTodosByCompleted(completed *bool) []entity.Todo {
