@@ -1,19 +1,14 @@
 package router
 
 import (
-	"net/http"
-
+	"github.com/buskarion/todoapp-with-gin/handler"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 
-	r.GET("/status", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{
-			"status": "Server is up and runing",
-		})
-	})
+	r.GET("/status", handler.Status)
 
 	return r
 }
