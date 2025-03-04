@@ -13,13 +13,28 @@ func Status(ctx *gin.Context) {
 }
 
 func GetTodos(ctx *gin.Context) {
-	caseDbIsEmpty(ctx)
-	ctx.JSON(http.StatusOK, service.GetAllTodos())
+	var completed *bool
+	completedParam := ctx.Query("completed")
+
+	if completedParam != "" {
+		parsedCompleted, err := strconv.ParseBool(completedParam)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid query param."})
+			return
+		}
+		completed = &parsedCompleted
+	}
+
+	todoList := service.GetAllTodos(completed)
+	if len(todoList) == 0 {
+		ctx.JSON(http.StatusOK, gin.H{"msg": "The list is empty."})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, todoList)
 }
 
 func GetTodosByID(ctx *gin.Context) {
-	caseDbIsEmpty(ctx)
-
 	ID := ctx.Param("id")
 	parsedID, err := strconv.Atoi(ID)
 	if err != nil {
@@ -33,12 +48,4 @@ func GetTodosByID(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, filteredTodos)
-}
-
-func caseDbIsEmpty(ctx *gin.Context) {
-	todosList := service.GetAllTodos()
-	if len(todosList) == 0 {
-		ctx.JSON(http.StatusOK, gin.H{"msg": "The list is empty."})
-		return
-	}
 }

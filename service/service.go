@@ -7,8 +7,8 @@ import (
 
 var todos *[]entity.Todo = db.BuildDB()
 
-func GetAllTodos() []entity.Todo {
-	return *todos
+func GetAllTodos(completed *bool) []entity.Todo {
+	return filterTodosByCompleted(completed)
 }
 
 func FilterTodosByID(id int) []entity.Todo {
@@ -18,5 +18,20 @@ func FilterTodosByID(id int) []entity.Todo {
 			filteredTodos = append(filteredTodos, t)
 		}
 	}
+	return filteredTodos
+}
+
+func filterTodosByCompleted(completed *bool) []entity.Todo {
+	if completed == nil {
+		return *todos
+	}
+
+	var filteredTodos []entity.Todo
+	for _, t := range *todos {
+		if t.Completed == *completed {
+			filteredTodos = append(filteredTodos, t)
+		}
+	}
+
 	return filteredTodos
 }
