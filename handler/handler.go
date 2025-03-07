@@ -81,6 +81,7 @@ func (h *handler) CreateTodo(ctx *gin.Context) {
 		return
 	}
 
-	ctx.Header("Location", fmt.Sprintf(strconv.Itoa(newTodo.ID)))
-	ctx.JSON(http.StatusCreated, h.service.CreateTodo(newTodo))
+	todo := h.service.CreateTodo(newTodo)
+	ctx.Header("Location", fmt.Sprintf("ToDo ID: %d", todo.ID))
+	ctx.JSON(http.StatusCreated, todo)
 }
