@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
+	"github.com/buskarion/todoapp-with-gin/entity"
 	"github.com/buskarion/todoapp-with-gin/service"
 	"github.com/gin-gonic/gin"
 )
@@ -12,6 +14,7 @@ type Handler interface {
 	Status(ctx *gin.Context)
 	GetTodos(ctx *gin.Context)
 	GetTodosByID(ctx *gin.Context)
+	CreateTodo(ctx *gin.Context)
 }
 
 type handler struct {
@@ -64,4 +67,20 @@ func (h *handler) GetTodosByID(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, filteredTodo)
+}
+
+func (h *handler) CreateTodo(ctx *gin.Context) {
+	var newTodo entity.Todo
+	if err := ctx.ShouldBindJSON(&newTodo); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
+		return
+	}
+
+	if newTodo.Task == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Field \"task\" cannot be empty"})
+		return
+	}
+
+	ctx.Header("Location", fmt.Sprintf(strconv.Itoa(newTodo.ID)))
+	ctx.JSON(http.StatusCreated, h.service.CreateTodo(newTodo))
 }

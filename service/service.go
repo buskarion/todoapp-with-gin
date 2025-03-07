@@ -9,6 +9,7 @@ type Service interface {
 	GetAllTodos(completed *bool) []entity.Todo
 	FilterTodosByID(id int) entity.Todo
 	filterTodosByCompleted(completed *bool) []entity.Todo
+	CreateTodo(todo entity.Todo) entity.Todo
 }
 
 type service struct {
@@ -47,4 +48,11 @@ func (s *service) filterTodosByCompleted(completed *bool) []entity.Todo {
 	}
 
 	return filteredTodos
+}
+
+func (s *service) CreateTodo(todo entity.Todo) entity.Todo {
+	todo.ID = len(*s.todos) + 1
+	todo.Completed = false
+	*s.todos = append(*s.todos, todo)
+	return todo
 }
