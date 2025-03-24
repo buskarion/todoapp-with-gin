@@ -15,6 +15,8 @@ type Handler interface {
 	GetTodos(ctx *gin.Context)
 	GetTodosByID(ctx *gin.Context)
 	CreateTodo(ctx *gin.Context)
+	UpdateTodo(ctx *gin.Context)
+	DeleteTodo(ctx *gin.Context)
 }
 
 type handler struct {
@@ -84,4 +86,42 @@ func (h *handler) CreateTodo(ctx *gin.Context) {
 	todo := h.service.CreateTodo(newTodo)
 	ctx.Header("Location", fmt.Sprintf("ToDo ID: %d", todo.ID))
 	ctx.JSON(http.StatusCreated, todo)
+}
+
+func (h *handler) UpdateTodo(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Invalid ID"})
+		return
+	}
+
+	if h.service.FilterTodosByID(id).ID == 0 {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "ID not found."})
+		return
+	}
+
+	var updatedData entity.Todo
+	if err := ctx.ShouldBindJSON(&updatedData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
+		return
+	}
+
+	updatedTodo := h.service.UpdateTodo(id, updatedData)
+
+	ctx.JSON(http.StatusOK, updatedTodo)
+}
+
+func (h *handler) DeleteTodo(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Invalid ID"})
+		return
+	}
+
+	if err = h.service.DeleteTodo(id); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Todo not found"})
+		return
+	}
+
+	ctx.Status(http.StatusNoContent)
 }
